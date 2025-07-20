@@ -61,7 +61,7 @@ export const authOptions: NextAuthOptions = {
               id: user.id,
               email: user.email || undefined,
               name: user.name || undefined,
-              role: user.role,
+              role: user.role as 'USER' | 'ADMIN',
             };
           }
 
@@ -91,7 +91,7 @@ export const authOptions: NextAuthOptions = {
                   id: user.id,
                   email: user.email || undefined,
                   name: user.name || undefined,
-                  role: user.role,
+                  role: user.role as 'USER' | 'ADMIN',
                 };
               }
             }
