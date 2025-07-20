@@ -13,7 +13,8 @@
     "db:seed": "tsx lib/seed.ts",
     "db:init": "npx prisma generate && npx prisma db push && npx tsx lib/seed.ts",
     "status": "node scripts/check-status.js",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "vercel-build": "prisma generate && prisma db push && next build"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",
