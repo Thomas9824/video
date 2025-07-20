@@ -2,7 +2,7 @@ import { put, del } from '@vercel/blob';
 
 export const uploadVideo = async (file: File, filename: string) => {
   try {
-    console.log(`📤 Upload vers Vercel Blob: ${filename}`);
+    console.log(`📤 Uploading to Vercel Blob: ${filename}`);
     
     const blob = await put(filename, file, {
       access: 'public',
