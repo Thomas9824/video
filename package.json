@@ -14,7 +14,7 @@
     "db:init": "npx prisma generate && npx prisma db push && npx tsx lib/seed.ts",
     "status": "node scripts/check-status.js",
     "postinstall": "prisma generate",
-    "build": "prisma generate && next build"
+    "build": "echo 'Starting build process...' && prisma generate && echo 'Building Next.js app...' && next build && echo 'Build completed successfully!'"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.3.2",
