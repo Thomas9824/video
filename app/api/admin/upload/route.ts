@@ -59,7 +59,7 @@ export async function POST(request: Request) {
     let thumbnailUrl = '';
     try {
       console.log('🖼️  Génération de la miniature...');
-      thumbnailUrl = await generateThumbnail(uploadResult.url);
+      thumbnailUrl = await generateThumbnail();
       console.log('✅ Miniature générée:', thumbnailUrl);
     } catch (error) {
       console.error('⚠️  Erreur génération miniature:', error);
