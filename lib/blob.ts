@@ -6,7 +6,6 @@ export const uploadVideo = async (file: File, filename: string) => {
     
     const blob = await put(filename, file, {
       access: 'public',
-      handleUploadUrl: '/api/upload/video',
     });
 
     console.log('✅ Upload Vercel Blob terminé:', blob.url);
