@@ -13,8 +13,6 @@ export const uploadVideo = async (file: File, filename: string) => {
     return {
       url: blob.url,
       pathname: blob.pathname,
-      size: blob.size,
-      uploadedAt: blob.uploadedAt,
     };
   } catch (error) {
     console.error('❌ Erreur lors de l\'upload Vercel Blob:', error);
@@ -37,7 +35,7 @@ export const deleteVideo = async (url: string) => {
   }
 };
 
-export const generateThumbnail = async (videoUrl: string) => {
+export const generateThumbnail = async () => {
   // Pour l'instant, on génère une URL de placeholder
   // Dans une version plus avancée, on pourrait utiliser un service de génération de miniatures
   const title = encodeURIComponent('Miniature Vidéo');
