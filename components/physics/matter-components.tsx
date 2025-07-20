@@ -139,8 +139,6 @@ export function Gravity({ gravity = { x: 0, y: 1 }, className = '', debug = fals
           showVelocity: debug,
           showAngleIndicator: debug,
           showBounds: false,
-          showVelocity: false,
-          showAngleIndicator: false,
         }
       });
       renderRef.current = render;
