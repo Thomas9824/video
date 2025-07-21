@@ -20,7 +20,6 @@ export async function initializeDatabase() {
           code: 'user123',
           type: 'USER',
           isActive: true,
-          description: 'Default user access code'
         }
       });
       
@@ -31,7 +30,6 @@ export async function initializeDatabase() {
           code: 'admin456',
           type: 'ADMIN',
           isActive: true,
-          description: 'Default admin access code'
         }
       });
       
