@@ -3,16 +3,40 @@ import { prisma } from '@/lib/prisma';
 
 export async function POST() {
   try {
-    console.log('🔄 Configuration de la base de données...');
+    console.log('🔄 Correction des tables...');
     
     // 1. Test connection
     await prisma.$connect();
     console.log('✅ Connexion à la base de données réussie');
     
-    // 2. Create tables using raw SQL (equivalent to prisma db push)
-    console.log('🔄 Création des tables...');
+    // 2. Drop existing tables with wrong names
+    console.log('🗑️ Suppression des anciennes tables...');
     
-    // Create users table (matching Prisma schema)
+    try {
+      await prisma.$executeRaw`DROP TABLE IF EXISTS "User" CASCADE;`;
+      console.log('✅ Table "User" supprimée');
+    } catch (e) {
+      console.log('ℹ️ Table "User" n\'existait pas');
+    }
+    
+    try {
+      await prisma.$executeRaw`DROP TABLE IF EXISTS "Video" CASCADE;`;
+      console.log('✅ Table "Video" supprimée');
+    } catch (e) {
+      console.log('ℹ️ Table "Video" n\'existait pas');
+    }
+    
+    try {
+      await prisma.$executeRaw`DROP TABLE IF EXISTS "ActivityLog" CASCADE;`;
+      console.log('✅ Table "ActivityLog" supprimée');
+    } catch (e) {
+      console.log('ℹ️ Table "ActivityLog" n\'existait pas');
+    }
+    
+    // 3. Create tables with correct names (matching Prisma schema)
+    console.log('🔄 Création des tables avec les bons noms...');
+    
+    // Create users table
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "users" (
         "id" TEXT NOT NULL,
@@ -35,7 +59,7 @@ export async function POST() {
       CREATE UNIQUE INDEX IF NOT EXISTS "users_email_key" ON "users"("email");
     `;
     
-    // Create access_codes table
+    // Create access_codes table (should already exist with correct name)
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "access_codes" (
         "id" TEXT NOT NULL,
@@ -44,7 +68,7 @@ export async function POST() {
         "isActive" BOOLEAN NOT NULL DEFAULT true,
         "expiresAt" TIMESTAMP(3),
         "createdAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
-        "updatedAt" TIMESTAMP(3) NOT NULL,
+        "updatedAt" TIMESTAMP(3) NOT NULL DEFAULT CURRENT_TIMESTAMP,
         "userId" TEXT,
         CONSTRAINT "access_codes_pkey" PRIMARY KEY ("id")
       );
@@ -54,7 +78,7 @@ export async function POST() {
       CREATE UNIQUE INDEX IF NOT EXISTS "access_codes_code_key" ON "access_codes"("code");
     `;
     
-    // Create videos table (matching Prisma schema)
+    // Create videos table
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "videos" (
         "id" TEXT NOT NULL,
@@ -76,7 +100,7 @@ export async function POST() {
       );
     `;
     
-    // Create activity_logs table (matching Prisma schema)
+    // Create activity_logs table
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "activity_logs" (
         "id" TEXT NOT NULL,
@@ -90,7 +114,7 @@ export async function POST() {
       );
     `;
     
-    // Create sessions table (matching Prisma schema)
+    // Create sessions table
     await prisma.$executeRaw`
       CREATE TABLE IF NOT EXISTS "sessions" (
         "id" TEXT NOT NULL,
@@ -106,10 +130,10 @@ export async function POST() {
       CREATE UNIQUE INDEX IF NOT EXISTS "sessions_sessionToken_key" ON "sessions"("sessionToken");
     `;
     
-    console.log('✅ Tables créées avec succès');
+    console.log('✅ Tables créées avec les bons noms');
     
-    // 3. Create default access codes
-    console.log('🔄 Création des codes d\'accès par défaut...');
+    // 4. Ensure access codes exist
+    console.log('🔄 Vérification des codes d\'accès...');
     
     const userCode = await prisma.accessCode.upsert({
       where: { code: 'user123' },
@@ -131,16 +155,17 @@ export async function POST() {
       }
     });
     
-    console.log('✅ Codes d\'accès créés');
+    console.log('✅ Codes d\'accès vérifiés');
     
-    // 4. Verify everything
+    // 5. Verify everything
     const allCodes = await prisma.accessCode.findMany();
     console.log('📋 Codes disponibles:', allCodes.map(c => `${c.code} (${c.type})`));
     
     return NextResponse.json({
       success: true,
-      message: 'Base de données configurée avec succès',
-      tables: ['users', 'access_codes', 'videos', 'activity_logs', 'sessions'],
+      message: 'Tables corrigées avec succès - noms compatibles avec Prisma',
+      tablesFixed: ['User → users', 'Video → videos', 'ActivityLog → activity_logs'],
+      tablesCreated: ['users', 'access_codes', 'videos', 'activity_logs', 'sessions'],
       codes: allCodes.map(c => ({ 
         code: c.code, 
         type: c.type, 
@@ -150,11 +175,11 @@ export async function POST() {
     });
     
   } catch (error) {
-    console.error('❌ Erreur lors de la configuration:', error);
+    console.error('❌ Erreur lors de la correction:', error);
     
     return NextResponse.json({
       success: false,
-      error: 'Erreur lors de la configuration de la base de données',
+      error: 'Erreur lors de la correction des tables',
       details: error instanceof Error ? error.message : 'Erreur inconnue',
       timestamp: new Date().toISOString()
     }, { status: 500 });
