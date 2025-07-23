@@ -17,7 +17,7 @@ export async function POST() {
     
     const userCode = await prisma.accessCode.upsert({
       where: { code: process.env.DEFAULT_USER_CODE || 'user123' },
-      update: {},
+      update: { isActive: true },
       create: {
         code: process.env.DEFAULT_USER_CODE || 'user123',
         type: 'USER',
@@ -27,7 +27,7 @@ export async function POST() {
     
     const adminCode = await prisma.accessCode.upsert({
       where: { code: process.env.DEFAULT_ADMIN_CODE || 'admin456' },
-      update: {},
+      update: { isActive: true },
       create: {
         code: process.env.DEFAULT_ADMIN_CODE || 'admin456',
         type: 'ADMIN',
